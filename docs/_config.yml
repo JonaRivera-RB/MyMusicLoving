@@ -1,0 +1,7 @@
+# Configuración de GitHub Pages (origen: rama main, carpeta /docs).
+# Solo existe para publicar la política de privacidad en una URL estable,
+# requisito obligatorio de la Chrome Web Store.
+# La página queda en https://<usuario>.github.io/MyMusicLoving/privacidad/
+title: MyMusicLoving
+description: Extensión de Chrome que agrega canciones de YouTube a Spotify.
+theme: jekyll-theme-minimal
