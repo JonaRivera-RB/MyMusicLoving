@@ -14,7 +14,15 @@ const BUTTON_ID = "mml-heart-button";
 const MODAL_ID = "mml-modal";
 const TOAST_ID = "mml-toast";
 
+// El content script se inyecta en toda youtube.com (hace falta: en una SPA la
+// inyección ocurre al cargar el documento, así que entrar por la home y luego
+// abrir un video no dispararía ninguna otra). Pero observar todo el body sin
+// límite en páginas donde el botón nunca se va a insertar cuesta CPU, así que
+// solo observamos en /watch y con un tope de tiempo.
+const OBSERVER_TIMEOUT_MS = 15_000;
+
 let observer = null;
+let observerTimeoutId = null;
 
 // ---------- Mensajería con el service worker ----------
 
@@ -56,17 +64,31 @@ function injectHeartButton() {
   return true;
 }
 
+function isWatchPage() {
+  return window.location.pathname === "/watch";
+}
+
+function stopObserving() {
+  observer?.disconnect();
+  observer = null;
+  clearTimeout(observerTimeoutId);
+  observerTimeoutId = null;
+}
+
 function waitForActionsContainer() {
+  stopObserving();
+  if (!isWatchPage()) return;
   if (injectHeartButton()) return;
 
-  if (observer) observer.disconnect();
   observer = new MutationObserver(() => {
-    if (injectHeartButton()) {
-      observer.disconnect();
-      observer = null;
-    }
+    // Si YouTube navegó fuera de /watch mientras esperábamos, ya no aplica.
+    if (!isWatchPage() || injectHeartButton()) stopObserving();
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // Red de seguridad: si el contenedor no aparece (YouTube cambió su DOM),
+  // dejamos de observar en vez de escuchar el resto de la sesión.
+  observerTimeoutId = setTimeout(stopObserving, OBSERVER_TIMEOUT_MS);
 }
 
 function handleNavigate() {

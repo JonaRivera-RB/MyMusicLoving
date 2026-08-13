@@ -116,6 +116,7 @@ Principio: pedir lo mínimo necesario.
 | Riesgo | Mitigación |
 |---|---|
 | YouTube cambia su DOM | Selectores centralizados en un objeto único; fallback a `document.title` |
+| Coste del `MutationObserver` | El content script se inyecta en toda `youtube.com` (necesario en una SPA), pero solo se observa el DOM en `/watch` y con un tope de 15 s, en vez de escuchar el `body` entero el resto de la sesión |
 | Matching incorrecto | Confirmación humana con 2-3 candidatos (decisión de producto) |
 | Token expirado | Refresh automático; si falla, toast pidiendo reconectar |
 | Refresh concurrente | Spotify rota el `refresh_token` con PKCE: dos renovaciones a la vez invalidarían la sesión. `ensureValidAccessToken()` comparte una única renovación en curso (`refreshInFlight`) |
