@@ -1,0 +1,13 @@
+# Referencia del .gitignore del proyecto.
+# El Client ID de Spotify no es secreto (PKCE no usa Client Secret), pero
+# config.js no se versiona para poder cambiarlo por entorno sin diffs.
+# Plantilla versionada: src/lib/config.example.js
+src/lib/config.js
+
+# Artefactos de empaquetado para la Chrome Web Store
+dist/
+*.zip
+*.pem
+
+# macOS
+.DS_Store

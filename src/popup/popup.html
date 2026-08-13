@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MyMusicLoving</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app__header">
+        <span class="app__logo">🎧</span>
+        <h1 class="app__title">MyMusicLoving</h1>
+      </header>
+
+      <main id="auth-view" class="view">
+        <p class="status-text">Cargando…</p>
+      </main>
+
+      <nav id="tabs" class="tabs" hidden>
+        <button class="tab" data-tab="playlist" type="button">Playlist</button>
+        <button class="tab" data-tab="history" type="button">Historial</button>
+      </nav>
+
+      <section id="playlist-view" class="panel" hidden></section>
+      <section id="history-view" class="panel" hidden></section>
+    </div>
+    <!-- Script clásico: expone escapeHtml() como global para popup.js. -->
+    <script src="../lib/escape-html.js"></script>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

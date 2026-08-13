@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>title-parser — pruebas manuales</title>
+    <style>
+      body { font-family: monospace; background: #121212; color: #fff; padding: 24px; }
+      table { border-collapse: collapse; width: 100%; }
+      td, th { border: 1px solid #333; padding: 8px; text-align: left; font-size: 13px; }
+      tr.pass { color: #1db954; }
+      tr.fail { color: #f15e5e; }
+      h1 { font-size: 16px; }
+    </style>
+  </head>
+  <body>
+    <h1>title-parser.js — pruebas manuales (abrir este archivo directo en Chrome)</h1>
+    <table id="results">
+      <thead>
+        <tr><th>Input</th><th>Artist esperado</th><th>Title esperado</th><th>Resultado</th><th>OK</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script src="title-parser.js"></script>
+    <script>
+      // 10 títulos reales de YouTube usados para validar parseYoutubeTitle().
+      const CASES = [
+        { input: "Bad Bunny - Tití Me Preguntó (Official Video)", artist: "Bad Bunny", title: "Tití Me Preguntó" },
+        { input: "ROSALÍA - DESPECHÁ (Official Video)", artist: "ROSALÍA", title: "DESPECHÁ" },
+        { input: "The Weeknd - Blinding Lights (Official Music Video)", artist: "The Weeknd", title: "Blinding Lights" },
+        { input: "Dua Lipa - Levitating (Lyrics)", artist: "Dua Lipa", title: "Levitating" },
+        { input: "Queen - Bohemian Rhapsody (Official Video Remastered)", artist: "Queen", title: "Bohemian Rhapsody" },
+        { input: "Rick Astley - Never Gonna Give You Up (Official Music Video) [4K]", artist: "Rick Astley", title: "Never Gonna Give You Up" },
+        { input: "Coldplay - Yellow (Official Video) | Lyrics", artist: "Coldplay", title: "Yellow" },
+        { input: "Imagine Dragons - Believer (Lyrics Video) [HD]", artist: "Imagine Dragons", title: "Believer" },
+        { input: "Adele - Easy On Me (Official Video) 💔", artist: "Adele", title: "Easy On Me" },
+        { input: "Shakira - TQG ft Karol G (Official Video)", artist: "Shakira", title: "TQG feat. Karol G" },
+        { input: "HOTEL CALIFORNIA EAGLES (Official Video) [HD] #shorts", artist: null, title: "HOTEL CALIFORNIA EAGLES" },
+      ];
+
+      const tbody = document.querySelector("#results tbody");
+      for (const testCase of CASES) {
+        const result = parseYoutubeTitle(testCase.input);
+        const ok = result.artist === testCase.artist && result.title === testCase.title;
+        const row = document.createElement("tr");
+        row.className = ok ? "pass" : "fail";
+        row.innerHTML = `
+          <td>${testCase.input}</td>
+          <td>${testCase.artist ?? "—"}</td>
+          <td>${testCase.title}</td>
+          <td>artist: ${result.artist ?? "—"} / title: ${result.title}</td>
+          <td>${ok ? "✅" : "❌"}</td>
+        `;
+        tbody.appendChild(row);
+      }
+    </script>
+  </body>
+</html>

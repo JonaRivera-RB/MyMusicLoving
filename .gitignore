@@ -1,0 +1,10 @@
+# Client ID local (copiar desde src/lib/config.example.js)
+src/lib/config.js
+
+# Artefactos de empaquetado para la Chrome Web Store
+dist/
+*.zip
+*.pem
+
+# macOS
+.DS_Store
