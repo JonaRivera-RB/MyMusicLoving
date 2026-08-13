@@ -12,6 +12,53 @@ viendo a una playlist de Spotify con un clic.
   artista, álbum y duración) antes de agregar nada.
 - Playlist por defecto configurable, e historial de las últimas 200 canciones.
 
+## Este repositorio como banco de pruebas
+
+Además de ser una extensión que uso, este repositorio es mi base para comparar
+herramientas de programación agéntica: **Claude Code**, **Cursor**, **Codex** y
+**Kiro**.
+
+La idea es tener el proyecto especificado *antes* de escribir código, para que
+lo que varíe entre una herramienta y otra sea la herramienta, no el encargo.
+La especificación se escribió primero y no se toca:
+
+| Documento | Qué fija |
+|---|---|
+| [CLAUDE.md](CLAUDE.md) | Reglas no negociables: MV3, JS vainilla sin build step, PKCE, dónde vive cada responsabilidad, idioma y estética |
+| [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Componentes, flujos, modelo de datos y riesgos previstos |
+| [docs/HISTORIAS_USUARIO.md](docs/HISTORIAS_USUARIO.md) | 10 historias en 3 fases, cada una con criterios de aceptación verificables |
+
+Las condiciones que se mantienen iguales para todas:
+
+- Mismo alcance y mismo orden: las 10 HU por fases, sin adelantarse.
+- Una HU está hecha cuando cumple sus criterios de aceptación, no cuando corre.
+- Sin dependencias ni build step: nada queda escondido detrás de un bundler.
+- Cada cambio se prueba a mano en Chrome y se documenta cómo hacerlo.
+
+Lo que me interesa medir no es cuál escribe código más rápido, sino cuál
+respeta una especificación que ya existe, cuál encuentra sus propios errores y
+cuál distingue un bug real de uno inventado.
+
+### Registro
+
+**MVP (HU-01 a HU-10) — Claude Code.** Las 10 historias implementadas por fases
+a partir de [PROMPT_INICIAL.md](PROMPT_INICIAL.md), con prueba manual en Chrome
+al cerrar cada una.
+
+**Auditoría y correcciones — Claude Code.** Revisión del código ya escrito.
+Encontró que dos renovaciones simultáneas del token cerraban la sesión (Spotify
+rota el `refresh_token` con PKCE), que el buscador de playlists perdía el foco a
+la primera tecla, que el texto venido de Spotify se interpolaba sin escapar, que
+el modal dejaba pasar los atajos de teclado de YouTube y que el `MutationObserver`
+seguía activo en páginas donde nunca iba a insertar el botón. Cada corrección se
+verificó con una prueba que falla contra el código anterior.
+
+**Preparación de release — Claude Code.** Iconos, política de privacidad, script
+de empaquetado con validaciones previas, README y repositorio.
+
+Las entradas de Cursor, Codex y Kiro se añadirán conforme cada herramienta
+trabaje sobre este mismo código y la misma especificación.
+
 ## Requisitos
 
 - Google Chrome 102 o superior.
