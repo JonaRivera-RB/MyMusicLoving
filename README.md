@@ -124,9 +124,11 @@ y el proceso tarda semanas: empieza pronto.
 
 **4. Ficha de la Store**
 
-- **Política de privacidad (obligatoria):** publica
-  [docs/PRIVACIDAD.md](docs/PRIVACIDAD.md) en una URL accesible (GitHub Pages
-  sirve) y pega el enlace en la pestaña "Privacy" del dashboard.
+- **Política de privacidad (obligatoria):** ya publicada en
+  **https://jonarivera-rb.github.io/MyMusicLoving/privacidad/** — pega ese
+  enlace en la pestaña "Privacy" del dashboard. La fuente es
+  [docs/PRIVACIDAD.md](docs/PRIVACIDAD.md); GitHub Pages la sirve desde la
+  carpeta `/docs` de `main`, así que se actualiza sola con cada push.
 - **Screenshots:** 1280×800 o 640×400, entre 1 y 5. Las útiles son el botón ❤️
   en un video, el modal de candidatos, el toast de confirmación y el popup con
   el historial.
