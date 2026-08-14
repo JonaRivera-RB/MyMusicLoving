@@ -101,6 +101,53 @@ export async function createPlaylist(accessToken, userId, name) {
   return { id: playlist.id, name: playlist.name };
 }
 
+/**
+ * Devuelve el `snapshot_id` de una playlist: cambia con cada modificación, así
+ * que sirve para saber si una lista de canciones cacheada sigue vigente.
+ * @returns {Promise<string>}
+ */
+export async function getPlaylistSnapshotId(accessToken, playlistId) {
+  const response = await spotifyFetch(
+    accessToken,
+    `https://api.spotify.com/v1/playlists/${playlistId}?fields=snapshot_id`,
+  );
+  if (!response.ok) {
+    throw new HttpError(response.status, "No se pudo consultar la playlist.");
+  }
+  const data = await response.json();
+  return data.snapshot_id;
+}
+
+/**
+ * Devuelve el conjunto de URIs de las canciones de una playlist, paginando
+ * hasta el final. Pide solo el campo `uri` para que la respuesta sea mínima.
+ * @returns {Promise<Set<string>>}
+ */
+export async function getPlaylistTrackUris(accessToken, playlistId) {
+  const uris = new Set();
+  let url =
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks` +
+    `?fields=items(track(uri)),next&limit=100`;
+
+  while (url) {
+    const response = await spotifyFetch(accessToken, url);
+    if (!response.ok) {
+      throw new HttpError(response.status, "No se pudieron leer las canciones de la playlist.");
+    }
+    const data = await response.json();
+    for (const item of data.items ?? []) {
+      if (item.track?.uri) uris.add(item.track.uri);
+    }
+    url = data.next;
+  }
+
+  return uris;
+}
+
+/**
+ * Agrega una canción y devuelve el nuevo `snapshot_id` de la playlist.
+ * @returns {Promise<string|null>}
+ */
 export async function addTrackToPlaylist(accessToken, playlistId, trackUri) {
   const response = await spotifyFetch(
     accessToken,
@@ -114,4 +161,6 @@ export async function addTrackToPlaylist(accessToken, playlistId, trackUri) {
   if (!response.ok) {
     throw new HttpError(response.status, "No se pudo agregar la canción a la playlist.");
   }
+  const data = await response.json();
+  return data.snapshot_id ?? null;
 }

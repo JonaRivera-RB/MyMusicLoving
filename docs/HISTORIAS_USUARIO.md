@@ -108,8 +108,23 @@ Criterios de aceptación:
 
 ---
 
+---
+
+## Fase 4 — Post-MVP
+
+### HU-11 · No agregar dos veces la misma canción
+**Como** usuario, **quiero** que la extensión me avise si la canción ya está en la playlist, **para** no llenarla de repetidas.
+
+Criterios de aceptación:
+- [x] Antes de agregar, se comprueba si la canción ya está en la playlist de destino.
+- [x] Si ya está, no se agrega y aparece un toast "Ya estaba en {playlist} 🎵" con su carátula y link a Spotify.
+- [x] Una canción duplicada no genera entrada en el historial.
+- [x] La comprobación no penaliza el tiempo de agregado: la lista de canciones se cachea y se revalida con el `snapshot_id` de la playlist.
+- [x] Si la playlist cambió fuera de la extensión, la comprobación lo detecta.
+
+---
+
 ## Backlog futuro (NO implementar en MVP)
-- Evitar duplicados en la playlist (avisar "ya está en tu playlist").
 - Atajo de teclado global para agregar sin clic.
 - Soporte para YouTube Music.
 - Estadísticas del historial (artistas más agregados).

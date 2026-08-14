@@ -189,6 +189,16 @@ async function confirmCandidate(candidate, overridePlaylist) {
     return;
   }
 
+  if (response.duplicate) {
+    showToast(
+      `Ya estaba en ${response.playlist_name} 🎵`,
+      "info",
+      candidate.cover_url,
+      candidate.external_url,
+    );
+    return;
+  }
+
   showToast(
     `✅ Agregada a ${response.playlist_name}`,
     "success",

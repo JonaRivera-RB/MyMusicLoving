@@ -8,6 +8,8 @@ import {
   getPlaylists,
   createPlaylist,
   addTrackToPlaylist,
+  getPlaylistSnapshotId,
+  getPlaylistTrackUris,
 } from "../lib/spotify-api.js";
 
 function buildAuthUrl(redirectUri, codeChallenge, state) {
@@ -203,6 +205,23 @@ async function recordHistory(entry) {
   await set({ history: updated });
 }
 
+// Spotify no tiene un endpoint "¿está esta canción en esta playlist?", así que
+// hay que paginar la playlist entera. Para no repetirlo en cada canción se
+// cachea el resultado y se valida con el snapshot_id, que Spotify cambia en
+// cada modificación. La cache vive en memoria: si el service worker se
+// suspende, simplemente se vuelve a pedir.
+const playlistUrisCache = new Map();
+
+async function getPlaylistUris(accessToken, playlistId) {
+  const snapshotId = await getPlaylistSnapshotId(accessToken, playlistId);
+  const cached = playlistUrisCache.get(playlistId);
+  if (cached && cached.snapshotId === snapshotId) return cached.uris;
+
+  const uris = await getPlaylistTrackUris(accessToken, playlistId);
+  playlistUrisCache.set(playlistId, { snapshotId, uris });
+  return uris;
+}
+
 async function addTrack({ track, playlistId, playlistName, ytVideoId }) {
   const accessToken = await requireAccessToken();
 
@@ -210,8 +229,22 @@ async function addTrack({ track, playlistId, playlistName, ytVideoId }) {
     ? { id: playlistId, name: playlistName }
     : await ensureDefaultPlaylist(accessToken);
 
-  await addTrackToPlaylist(accessToken, targetPlaylist.id, track.uri);
-  await recordHistory({ ...track, playlist_name: targetPlaylist.name, yt_video_id: ytVideoId });
+  const uris = await getPlaylistUris(accessToken, targetPlaylist.id);
+  if (uris.has(track.uri)) {
+    return { duplicate: true, playlist_name: targetPlaylist.name };
+  }
+
+  const snapshotId = await addTrackToPlaylist(accessToken, targetPlaylist.id, track.uri);
+  // Reflejar el alta en la cache para no repaginar en la siguiente canción.
+  uris.add(track.uri);
+  playlistUrisCache.set(targetPlaylist.id, { snapshotId, uris });
+
+  await recordHistory({
+    ...track,
+    playlist_id: targetPlaylist.id,
+    playlist_name: targetPlaylist.name,
+    yt_video_id: ytVideoId,
+  });
 
   return { playlist_name: targetPlaylist.name };
 }
